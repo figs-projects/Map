@@ -2,32 +2,16 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Australia Live Status Map</title>
-  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css">
-  <link rel="stylesheet" href="style.css">
+  <title>Australia Live Map</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+  <style>
+    body, html { margin: 0; height: 100%; }
+    #map { height: 100%; }
+  </style>
 </head>
 <body>
-
-<nav>
-  <strong>Australia Live Map</strong>
-  <a href="news.html">📰 Breaking News</a>
-</nav>
-
-<div id="sidebar">
-  <h3>Layers</h3>
-  <label><input type="checkbox" id="fires" checked> 🔥 Bushfires</label>
-  <label><input type="checkbox" id="weather" checked> 🌧️ Weather Warnings</label>
-  <label><input type="checkbox" id="traffic"> 🚗 Traffic & Crashes</label>
-
-  <p class="note">
-    Data from official and trusted providers.<br>
-    Always follow emergency services advice.
-  </p>
-</div>
-
-<div id="map"></div>
-
-<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
-<script src="app.js"></script>
+  <div id="map"></div>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="app.js"></script>
 </body>
 </html>
