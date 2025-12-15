@@ -42,13 +42,33 @@ fetch('https://api.weather.bom.gov.au/v1/warnings')
     });
   });
 
-/* 🚗 Traffic (HERE – requires free API key) */
-const HERE_API_KEY = "PUT_YOUR_HERE_API_KEY_HERE";
+/* 🚗 Main Roads WA – Traffic Incidents */
+const trafficLayer = L.layerGroup();
 
-const trafficLayer = L.tileLayer(
-  `https://traffic.maps.hereapi.com/v3/traffic/flow/mc/{z}/{x}/{y}/png?apiKey=${HERE_API_KEY}`,
-  { opacity: 0.7 }
-);
+fetch(
+  "https://services.arcgis.com/ubm4tcTYICKBpist/ArcGIS/rest/services/Main_Roads_WA_Traffic_Events/FeatureServer/0/query?where=1=1&outFields=*&f=geojson"
+)
+  .then(res => res.json())
+  .then(data => {
+    L.geoJSON(data, {
+      pointToLayer: (feature, latlng) =>
+        L.circleMarker(latlng, {
+          radius: 6,
+          color: "#ffcc00",
+          fillOpacity: 0.9
+        }),
+      onEachFeature: (feature, layer) => {
+        layer.bindPopup(`
+          <strong>🚗 Traffic Incident</strong><br>
+          Type: ${feature.properties.EVENT_TYPE || "Incident"}<br>
+          Road: ${feature.properties.ROAD_NAME || "Unknown"}<br>
+          Status: ${feature.properties.STATUS || "Active"}<br>
+          <small>Source: Main Roads WA</small>
+        `);
+      }
+    }).addTo(trafficLayer);
+  });
+
 
 /* TOGGLES */
 document.getElementById('fires').onchange = e =>
