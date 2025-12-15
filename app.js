@@ -42,15 +42,18 @@ fetch('https://api.weather.bom.gov.au/v1/warnings')
     });
   });
 
-/* 🚗 Main Roads WA – Traffic Incidents */
+/* ---------------- WA Traffic (Main Roads WA) ---------------- */
 const trafficLayer = L.layerGroup();
 
-fetch(
-  "https://services.arcgis.com/ubm4tcTYICKBpist/ArcGIS/rest/services/Main_Roads_WA_Traffic_Events/FeatureServer/0/query?where=1=1&outFields=*&f=geojson"
-)
-  .then(res => res.json())
+const mainRoadsWAUrl =
+  "https://maps.mainroads.wa.gov.au/arcgis/rest/services/Traffic/Traffic_Incidents/MapServer/0/query?where=1=1&outFields=*&f=geojson";
+
+// Use AllOrigins to bypass CORS
+fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(mainRoadsWAUrl)}`)
+  .then(response => response.json())
   .then(data => {
-    L.geoJSON(data, {
+    const geojson = JSON.parse(data.contents);
+    L.geoJSON(geojson, {
       pointToLayer: (feature, latlng) =>
         L.circleMarker(latlng, {
           radius: 6,
@@ -67,7 +70,23 @@ fetch(
         `);
       }
     }).addTo(trafficLayer);
+  })
+  .catch(err => {
+    console.error("Traffic layer failed to load, showing fallback link:", err);
+
+    // Fallback: single clickable marker in Perth linking to official map
+    const perthLatLng = [-31.9505, 115.8605];
+    const fallbackMarker = L.marker(perthLatLng).addTo(trafficLayer);
+    fallbackMarker.bindPopup(`
+      🚗 Traffic data unavailable.<br>
+      Click <a href="https://www.mainroads.wa.gov.au/UsingRoads/LiveTraffic/Pages/default.aspx" target="_blank">
+      here</a> to view Main Roads WA Live Traffic.
+    `);
   });
+
+/* Toggle for checkbox */
+document.getElementById('traffic').onchange = e =>
+  e.target.checked ? map.addLayer(trafficLayer) : map.removeLayer(trafficLayer);
 
 
 /* TOGGLES */
